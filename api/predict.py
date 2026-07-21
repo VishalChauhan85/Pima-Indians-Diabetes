@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
 import pickle
@@ -81,3 +81,14 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+
+# --- RENDER SERVER LOOP ADDED BELOW ---
+if __name__ == "__main__":
+    # Render assigns a dynamic port via the PORT environment variable
+    port = int(os.environ.get("PORT", 10000))
+    server_address = ("0.0.0.0", port)
+    
+    print(f"Starting server on port {port}...")
+    httpd = HTTPServer(server_address, handler)
+    httpd.serve_forever()
