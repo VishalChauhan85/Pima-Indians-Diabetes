@@ -198,6 +198,26 @@ function Index() {
       Pregnancies: sex === "male" ? 0 : values.Pregnancies,
     };
     try {
+      // UPDATED: Pointing to your live Render backend
+      const res = await fetch("https://pima-indians-diabetes.onrender.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`API responded ${res.status}`);
+      const data = await res.json();
+      setResult({ ...data, source: "model" });
+    } catch {
+      const demo = demoPredict(payload);
+      setResult({ ...demo, source: "demo" });
+      setError(
+        "Live model API unreachable in preview — showing a demo heuristic. Deploy to Vercel to use your trained model.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+    try {
       const res = await fetch("/api/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
