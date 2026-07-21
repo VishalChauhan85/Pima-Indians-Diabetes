@@ -29,7 +29,7 @@ def _load_model():
 
 def _cors(handler: BaseHTTPRequestHandler):
     handler.send_header("Access-Control-Allow-Origin", "*")
-    handler.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+    handler.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     handler.send_header("Access-Control-Allow-Headers", "Content-Type")
 
 
@@ -38,6 +38,13 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(204)
         _cors(self)
         self.end_headers()
+
+    # --- ADDED THIS TO FIX THE BROWSER ERROR ---
+    def do_GET(self):
+        return self._json(200, {
+            "status": "online",
+            "message": "Pima Diabetes Predictor API is running! Use your Vercel frontend to send a POST request with patient data."
+        })
 
     def do_POST(self):
         try:
@@ -83,7 +90,6 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
-# --- RENDER SERVER LOOP ADDED BELOW ---
 if __name__ == "__main__":
     # Render assigns a dynamic port via the PORT environment variable
     port = int(os.environ.get("PORT", 10000))
